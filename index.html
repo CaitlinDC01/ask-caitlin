@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Caitlin | Interactive Career Profile</title>
+  <style>
+    :root {
+      --navy: #071B3A;
+      --deep-blue: #0B2E59;
+      --teal: #17B7B1;
+      --purple: #7D3CFF;
+      --lavender: #EDE7FF;
+      --white: #FFFFFF;
+      --soft: #F6F8FB;
+      --muted: #5D6B7A;
+      --card: rgba(255,255,255,0.94);
+      --shadow: 0 18px 50px rgba(7, 27, 58, 0.22);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(23,183,177,0.30), transparent 34%),
+        radial-gradient(circle at top right, rgba(125,60,255,0.28), transparent 38%),
+        linear-gradient(145deg, var(--navy), var(--deep-blue));
+      color: var(--navy);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .panel, .chat {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.45);
+      overflow: hidden;
+    }
+
+    .panel {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .badge {
+      width: fit-content;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, var(--teal), var(--purple));
+      color: white;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      color: var(--navy);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(23,183,177,0.14), rgba(125,60,255,0.12));
+      border: 1px solid rgba(23,183,177,0.25);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .highlight-box h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: var(--navy);
+    }
+
+    .highlight-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: var(--soft);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 92px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      color: var(--purple);
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.25;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .contact-links a {
+      text-decoration: none;
+      color: white;
+      background: var(--navy);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 750;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .contact-links a:hover {
+      transform: translateY(-2px);
+      background: var(--purple);
+    }
+
+    .chat {
+      display: flex;
+      flex-direction: column;
+      min-height: 720px;
+      position: relative;
+    }
+
+    .chat-header {
+      padding: 22px 24px;
+      background: linear-gradient(135deg, var(--navy), var(--deep-blue));
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chat-header h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .chat-header p {
+      margin: 4px 0 0;
+      color: rgba(255,255,255,0.76);
+      font-size: 13px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      background: var(--teal);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(23,183,177,0.20);
+    }
+
+    .suggestions {
+      padding: 16px 20px 6px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: white;
+      border-bottom: 1px solid #E8EDF5;
+    }
+
+    .chip {
+      border: 1px solid rgba(125,60,255,0.18);
+      background: linear-gradient(135deg, rgba(125,60,255,0.08), rgba(23,183,177,0.08));
+      color: var(--deep-blue);
+      padding: 13px 16px;
+      border-radius: 18px;
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: all .18s ease;
+      text-align: left;
+      box-shadow: 0 6px 18px rgba(7,27,58,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chip:hover {
+      background: linear-gradient(135deg, rgba(125,60,255,0.16), rgba(23,183,177,0.16));
+      border-color: rgba(125,60,255,0.45);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 12px 28px rgba(125,60,255,0.16);
+    }
+
+    .chip::after {
+      content: '→';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--purple);
+      opacity: 0.85;
+    }
+
+    .messages {
+      padding: 22px;
+      flex: 1;
+      overflow-y: auto;
+      background: linear-gradient(180deg, #FFFFFF, #F7FAFD);
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 16px;
+    }
+
+    .message.user { justify-content: flex-end; }
+
+    .bubble {
+      max-width: 82%;
+      padding: 15px 16px;
+      border-radius: 18px;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .assistant .bubble {
+      background: white;
+      border: 1px solid #E8EDF5;
+      color: var(--navy);
+      box-shadow: 0 8px 24px rgba(7,27,58,0.07);
+    }
+
+    .user .bubble {
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      color: white;
+      font-weight: 650;
+    }
+
+    .bubble strong { color: var(--deep-blue); }
+    .user .bubble strong { color: white; }
+
+    .bubble ul {
+      margin: 10px 0 0;
+      padding-left: 19px;
+    }
+
+    .bubble li { margin: 5px 0; }
+
+    .composer {
+      padding: 18px;
+      background: white;
+      border-top: 1px solid #E8EDF5;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    input {
+      border: 1px solid #DDE6F2;
+      border-radius: 999px;
+      padding: 15px 18px;
+      font-size: 15px;
+      outline: none;
+      color: var(--navy);
+      width: 100%;
+    }
+
+    input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 4px rgba(23,183,177,0.14);
+    }
+
+    button.send {
+      border: none;
+      border-radius: 999px;
+      padding: 0 22px;
+      background: var(--navy);
+      color: white;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    button.send:hover {
+      transform: translateY(-1px);
+      background: var(--purple);
+    }
+
+    .footer-note {
+      font-size: 11px;
+      color: rgba(255,255,255,0.76);
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+      .app { grid-template-columns: 1fr; }
+      .chat { min-height: 680px; }
+      .panel { padding: 22px; }
+    }
+
+    @media (max-width: 520px) {
+      .chat-header { align-items: flex-start; flex-direction: column; }
+      .composer { grid-template-columns: 1fr; }
+      button.send { padding: 14px; }
+      .bubble { max-width: 94%; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Caitlin Cloyd interactive profile tool">
+    <aside class="panel">
+      <div class="badge">Interactive Career Profile</div>
+      <div>
+        <h1>Ask Caitlin.</h1>
+        <p class="subtitle">A resume can show the headlines. This tool gives hiring managers a clearer look at the strategy, leadership, AI work, facilitation style, and practical impact behind the bullet points.</p>
+      </div>
+
+      <section class="highlight-box">
+        <h2>Best-fit opportunities</h2>
+        <p>Professional learning leadership, AI implementation, instructional design, edtech enablement, leadership development, innovation strategy, curriculum design, and systems-level education roles.</p>
+      </section>
+
+      <section class="stats" aria-label="Career highlights">
+        <div class="stat"><strong>15+</strong><span>years across classroom, campus, district, and national learning work</span></div>
+        <div class="stat"><strong>7K+</strong><span>district employees reached through professional learning systems</span></div>
+        <div class="stat"><strong>39%</strong><span>reported increase in technology adoption through targeted training</span></div>
+        <div class="stat"><strong>2025</strong><span>author of AMPLIFIED Education: Creating Future-Ready Schools in the Age of AI</span></div>
+      </section>
+
+      
+
+      <nav class="contact-links" aria-label="Contact links">
+        <a href="mailto:caitlincloyd@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/caitlincloyd/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="tel:2813822720">Call</a>
+        <a href="https://caitlincloyd.com" target="_blank" rel="noopener">Website</a>
+      </nav>
+    </aside>
+
+    <section class="chat">
+      <header class="chat-header">
+        <div>
+          <h2>Caitlin Cloyd Career Q&A</h2>
+          <p>Built from resumes, cover letters, career materials, and role-aligned positioning.</p>
+        </div>
+        <div class="status"><span class="dot"></span> Ready to answer</div>
+      </header>
+
+      <div class="messages" id="messages" aria-live="polite"></div>
+
+      <form class="composer" id="askForm">
+        <input id="question" type="text" placeholder="Ask a question about Caitlin's experience, strengths, leadership style, or fit for a role..." autocomplete="off" />
+        <button class="send" type="submit">Ask</button>
+      </form>
+
+      <section style="padding: 18px 20px 8px; background: #FFFFFF; border-top: 1px solid #E8EDF5; border-bottom: 1px solid #E8EDF5;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+          <div>
+            <h3 style="margin:0; color: var(--navy); font-size:22px; letter-spacing:-0.03em;">Not sure what to ask?</h3>
+            <p style="margin:6px 0 0; color: var(--muted); font-size:14px; line-height:1.55; max-width:720px;">Start with one of the guided questions below to explore Caitlin's leadership style, AI implementation work, professional learning background, strategic thinking, and strengths.</p>
+          </div>
+
+          <div style="background: linear-gradient(135deg, rgba(23,183,177,0.12), rgba(125,60,255,0.12)); border:1px solid rgba(125,60,255,0.18); padding:10px 14px; border-radius:999px; font-size:12px; font-weight:800; color: var(--purple); box-shadow:0 6px 18px rgba(125,60,255,0.10);">
+            Explore Below ↓
+          </div>
+        </div>
+      </section>
+
+      <div class="suggestions" aria-label="Suggested questions">
+        <button class="chip" data-q="Why should we hire Caitlin?">Why should we hire Caitlin?</button>
+        <button class="chip" data-q="Tell me about Caitlin's AI implementation experience.">How has Caitlin led AI implementation?</button>
+        <button class="chip" data-q="What makes Caitlin effective at professional learning?">What makes Caitlin effective at professional learning?</button>
+        <button class="chip" data-q="What is Caitlin's MagicSchool experience?">What is Caitlin's experience with MagicSchool AI?</button>
+        <button class="chip" data-q="How does Caitlin lead change?">How does Caitlin lead change and innovation?</button>
+        <button class="chip" data-q="Is Caitlin a fit for curriculum design or instructional design roles?">Would Caitlin be a good fit for curriculum or instructional design?</button>
+        <button class="chip" data-q="What do people consistently say about working with Caitlin?">What do colleagues and participants consistently say about Caitlin?</button>
+        <button class="chip" data-q="How does Caitlin make AI feel practical instead of overwhelming?">How does Caitlin make AI practical for educators?</button>
+        <button class="chip" data-q="What kind of presenter and facilitator is Caitlin?">What kind of presenter and facilitator is Caitlin?</button>
+        <button class="chip" data-q="How does Caitlin support teachers and leaders through change?">How does Caitlin support teams through change?</button>
+        <button class="chip" data-q="Would Caitlin be a strong fit for cross-functional leadership roles?">Would Caitlin be a strong fit for cross-functional leadership roles?</button>
+        <button class="chip" data-q="Would Caitlin be a strong fit for experiential learning and student experience roles?">Would Caitlin be a strong fit for experiential learning roles?</button>
+        <button class="chip" data-q="How does Caitlin support communications, strategy, and stakeholder engagement?">How does Caitlin support communications and stakeholder engagement?</button>
+      </div>
+
+      <section style="padding: 24px 20px; background: linear-gradient(180deg,#FFFFFF,#F8FBFF); border-top:1px solid #E8EDF5; border-bottom:1px solid #E8EDF5;">
+        <div style="margin-bottom:20px;">
+          <div class="badge">Career Progression</div>
+          <h3 style="margin:14px 0 8px; color: var(--navy); font-size:28px; letter-spacing:-0.04em;">A connected leadership journey</h3>
+          <p style="margin:0; color: var(--muted); font-size:14px; line-height:1.65; max-width:780px;">Caitlin’s career progression reflects a consistent move from classroom impact to systems leadership, innovation strategy, and large-scale professional learning.</p>
+        </div>
+
+        <div style="display:grid; gap:14px; margin-bottom:26px;">
+          <div style="display:flex; gap:14px; align-items:flex-start; background:white; border:1px solid #E8EDF5; border-radius:20px; padding:18px; box-shadow:0 6px 18px rgba(7,27,58,0.05);">
+            <div style="min-width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,var(--teal),var(--purple)); color:white; display:flex; align-items:center; justify-content:center; font-weight:900;">1</div>
+            <div>
+              <strong style="display:block; color:var(--navy); font-size:16px; margin-bottom:4px;">Teacher + Technology Liaison</strong>
+              <p style="margin:0; color:var(--muted); line-height:1.6; font-size:14px;">Started in the classroom teaching secondary ELA while helping teachers integrate instructional technology, lead PLCs, and support innovation through peer coaching and modeling.</p>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start; background:white; border:1px solid #E8EDF5; border-radius:20px; padding:18px; box-shadow:0 6px 18px rgba(7,27,58,0.05);">
+            <div style="min-width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,var(--navy),var(--purple)); color:white; display:flex; align-items:center; justify-content:center; font-weight:900;">2</div>
+            <div>
+              <strong style="display:block; color:var(--navy); font-size:16px; margin-bottom:4px;">Digital Learning Specialist</strong>
+              <p style="margin:0; color:var(--muted); line-height:1.6; font-size:14px;">Expanded into instructional technology leadership, supporting blended learning, LMS implementation, 1:1 rollout initiatives, onboarding systems, AI literacy pilots, and campus-wide professional learning.</p>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start; background:white; border:1px solid #E8EDF5; border-radius:20px; padding:18px; box-shadow:0 6px 18px rgba(7,27,58,0.05);">
+            <div style="min-width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,var(--purple),var(--teal)); color:white; display:flex; align-items:center; justify-content:center; font-weight:900;">3</div>
+            <div>
+              <strong style="display:block; color:var(--navy); font-size:16px; margin-bottom:4px;">Assistant Principal + Leadership Development</strong>
+              <p style="margin:0; color:var(--muted); line-height:1.6; font-size:14px;">Moved into campus administration and later district leadership development work, managing operations, coaching teachers, supporting data-informed improvement, and helping build leadership pipelines and districtwide learning systems.</p>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start; background:white; border:1px solid #E8EDF5; border-radius:20px; padding:18px; box-shadow:0 6px 18px rgba(7,27,58,0.05);">
+            <div style="min-width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#17B7B1,#0B2E59); color:white; display:flex; align-items:center; justify-content:center; font-weight:900;">4</div>
+            <div>
+              <strong style="display:block; color:var(--navy); font-size:16px; margin-bottom:4px;">AI Leadership + National Facilitation</strong>
+              <p style="margin:0; color:var(--muted); line-height:1.6; font-size:14px;">Became a nationally recognized presenter and AI implementation leader through conference speaking, publishing, district AI initiatives, MagicSchool AI facilitation, and future-ready learning strategy work.</p>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start; background:white; border:1px solid #E8EDF5; border-radius:20px; padding:18px; box-shadow:0 6px 18px rgba(7,27,58,0.05);">
+            <div style="min-width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,var(--purple),#0B2E59); color:white; display:flex; align-items:center; justify-content:center; font-weight:900;">5</div>
+            <div>
+              <strong style="display:block; color:var(--navy); font-size:16px; margin-bottom:4px;">Houston ISD Leadership Academies</strong>
+              <p style="margin:0; color:var(--muted); line-height:1.6; font-size:14px;">Currently coordinates leadership development systems for principal apprentices and teacher leaders across Houston ISD, combining systems thinking, operational coordination, leadership support, and implementation strategy.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:white; border:1px solid #E8EDF5; border-radius:22px; padding:22px; box-shadow:0 8px 24px rgba(7,27,58,0.06);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+            <div>
+              <h3 style="margin:0; color: var(--navy); font-size:22px; letter-spacing:-0.03em;">Role Fit Analyzer</h3>
+              <p style="margin:6px 0 0; color: var(--muted); font-size:14px; line-height:1.55;">Paste a job description, district initiative, or strategic priority to generate a tailored fit analysis.</p>
+            </div>
+            <div style="background: linear-gradient(135deg, rgba(23,183,177,0.12), rgba(125,60,255,0.12)); border:1px solid rgba(125,60,255,0.18); padding:8px 12px; border-radius:999px; font-size:12px; font-weight:800; color: var(--purple);">
+              Hiring Manager Tool
+            </div>
+          </div>
+
+          <div style="display:grid; gap:12px;">
+            <textarea id="jobDescriptionInput" placeholder="Paste a job description, team priority, initiative, or role summary here..." style="width:100%; min-height:150px; resize:vertical; border-radius:18px; border:1px solid #DDE6F2; padding:16px; font-family:inherit; font-size:14px; line-height:1.55; color: var(--navy);"></textarea>
+            <button id="analyzeRoleBtn" style="width:100%; border:none; background: linear-gradient(135deg, var(--navy), var(--purple)); color:white; padding:15px 18px; border-radius:16px; font-weight:800; cursor:pointer; font-size:15px; box-shadow:0 10px 24px rgba(125,60,255,0.18);">
+              Analyze Caitlin's Fit
+            </button>
+          </div>
+
+          <div id="analysisResult" style="display:none; margin-top:16px; background:white; border:1px solid #E8EDF5; border-radius:18px; padding:18px;"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <section style="max-width:1120px; margin:22px auto 0; background: rgba(255,255,255,0.94); border-radius:24px; padding:24px; box-shadow: var(--shadow); border:1px solid rgba(255,255,255,0.45);">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap; margin-bottom:18px;">
+      <div>
+        <div class="badge">What It's Like to Work With Caitlin</div>
+        <h2 style="margin:14px 0 8px; color: var(--navy); font-size:30px; letter-spacing:-0.04em;">Leadership + collaboration style</h2>
+        <p style="margin:0; color: var(--muted); max-width:760px; line-height:1.65;">Beyond accomplishments and titles, Caitlin is known for helping teams move from confusion to clarity while keeping people supported throughout the process.</p>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px;">
+      <div style="background:linear-gradient(135deg, rgba(23,183,177,0.12), rgba(23,183,177,0.04)); border-radius:20px; padding:20px; border:1px solid rgba(23,183,177,0.18);">
+        <div style="font-size:40px; color: var(--teal); line-height:1; margin-bottom:8px;">“</div>
+        <p style="margin:0; line-height:1.65; color: var(--navy); font-size:14px;">Caitlin brings structure to ambitious ideas and makes people feel capable instead of overwhelmed. Multiple educators described her sessions as practical, energizing, and immediately usable.</p>
+      </div>
+
+      <div style="background:linear-gradient(135deg, rgba(125,60,255,0.12), rgba(125,60,255,0.04)); border-radius:20px; padding:20px; border:1px solid rgba(125,60,255,0.18);">
+        <div style="font-size:40px; color: var(--purple); line-height:1; margin-bottom:8px;">“</div>
+        <p style="margin:0; line-height:1.65; color: var(--navy); font-size:14px;">Participants repeatedly praised Caitlin for translating AI and innovation into practical strategies that save time, improve instruction, and feel accessible instead of intimidating.</p>
+      </div>
+
+      <div style="background:linear-gradient(135deg, rgba(11,46,89,0.12), rgba(11,46,89,0.04)); border-radius:20px; padding:20px; border:1px solid rgba(11,46,89,0.14);">
+        <div style="font-size:40px; color: var(--deep-blue); line-height:1; margin-bottom:8px;">“</div>
+        <p style="margin:0; line-height:1.65; color: var(--navy); font-size:14px;">Reviews consistently highlight Caitlin's ability to connect with teachers, campus leaders, district leadership, and large conference audiences while keeping sessions engaging, thoughtful, and highly relevant.</p>
+      </div>
+
+      <div style="background:linear-gradient(135deg, rgba(23,183,177,0.08), rgba(125,60,255,0.08)); border-radius:20px; padding:20px; border:1px solid rgba(23,183,177,0.14);">
+        <div style="font-size:40px; color: var(--navy); line-height:1; margin-bottom:8px;">“</div>
+        <p style="margin:0; line-height:1.65; color: var(--navy); font-size:14px;">Leaders and colleagues frequently describe Caitlin as collaborative, encouraging, future-focused, and deeply invested in helping others grow professionally.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-note">This is a curated career-profile assistant, not a live AI model. Edit the knowledge base in the script to add future job descriptions or new accomplishments.</div>
+
+  <script>
+    const caitlinProfile = {
+      name: "Caitlin Cloyd, M.Ed.",
+      headline: "Education leader, AI implementation strategist, professional learning designer, and future-ready systems builder.",
+      contact: {
+        email: "caitlincloyd@gmail.com",
+        phone: "(281) 382-2720",
+        linkedin: "LinkedIn.com/in/CaitlinCloyd"
+      },
+      roles: [
+        "Coordinator for Leadership Academies, Houston ISD",
+        "Professional Learning Facilitator, MagicSchool AI",
+        "Digital Learning Specialist, Klein ISD",
+        "District Professional Learning Coordinator, Klein ISD",
+        "Assistant Principal, Klein High School",
+        "ELA Teacher and Technology Liaison, Magnolia ISD"
+      ],
+      strengths: [
+        "AI implementation strategy and ethical integration",
+        "Professional learning architecture and facilitation",
+        "Leadership development and cohort-based programming",
+        "Instructional design, curriculum support, and adult learning",
+        "Digital platform implementation, LMS adoption, and change management",
+        "Executive communication, stakeholder engagement, and cross-functional coordination",
+        "Systems thinking, clarity-building, and practical innovation",
+        "Advanced proficiency with Canva, Google Workspace, LMS platforms, AI systems, and collaborative project management tools such as Trello"
+      ],
+      metrics: [
+        "Led or supported professional learning systems reaching 7,000+ district employees",
+        "Reported 39% increase in technology adoption through tailored training and implementation support",
+        "Supported districtwide initiatives impacting tens of thousands of students",
+        "Delivered national and regional presentations through ISTE, TCEA, Region 4 DLC, TxDLA, Google for Education, and other education events",
+        "Published AMPLIFIED Education: Creating Future-Ready Schools in the Age of AI",
+        "Designed new employee onboarding experiences for 500-700 staff members annually in a prior district role"
+      ],
+      currentAndFutureTargets: [
+        "Executive Director or leadership role in future-ready learning, AI, innovation, or digital strategy",
+        "Curriculum designer, instructional designer, or learning experience designer",
+        "Professional learning specialist, manager, or director",
+        "Edtech implementation, customer education, enablement, or product training",
+        "Leadership development, people development, and organizational learning roles",
+        "AI initiative teams, education strategy teams, and future-readiness work"
+      ],
+      accomplishments: [
+        "Helped lead district-level AI readiness work, including planning structures, stakeholder feedback, AI literacy pathways, and educator-facing training.",
+        "Designed and facilitated leadership development programs including assistant principal cohorts, teacher leadership academies, new teacher mentor programming, and district leadership gatherings.",
+        "Led 1:1 device rollout and Schoology LMS implementation support during a major districtwide digital transition.",
+        "Created campus and district PD systems such as Workshop Wednesdays, Tune-Up Tuesday sessions, personalized professional learning challenges, webinars, asynchronous courses, and onboarding experiences.",
+        "Piloted AI literacy lessons with ELA students and coached teachers on ethical, purposeful classroom AI use.",
+        "Created custom AI tools, prompts, GPTs, and artifacts to support coaching, feedback, STAAR review planning, walkthroughs, and instructional design.",
+        "Delivered customized MagicSchool AI professional development for K-12 educators and leaders across the U.S., in partnership with account, customer success, and school/district teams.",
+        "Built public thought leadership through LinkedIn articles, the Amplified by AI newsletter, conference presentations, and the book AMPLIFIED Education."
+      ],
+      philosophy: "Caitlin's work centers on making innovation practical, human, ethical, and useful. She is not interested in tech for novelty. Her focus is helping educators and leaders use new tools to improve learning, reduce friction, personalize support, and create more equitable access to high-quality education.",
+      tone: "Confident, practical, warm, future-focused, and grounded in real implementation experience."
+    };
+
+    const responseBank = [
+      {
+        intent: "why-hire",
+        keywords: ["hire", "why", "best", "strong", "candidate", "choose", "different"],
+        answer: `Caitlin is a strong hire because she brings more than experience. She brings <strong>range, judgment, and execution</strong>. She has taught students, coached teachers, led from an assistant principal seat, built district-level professional learning systems, supported leadership pipelines, and now facilitates AI learning nationally through MagicSchool AI.<br><br>What makes her different is that she can move between strategy and implementation without losing people in the process. She can sit with executives and talk vision, work with school leaders on systems, then turn around and design training that teachers actually find useful. For roles involving professional learning, AI, instructional design, edtech adoption, or future-ready strategy, she brings both credibility and momentum.`
+      },
+      {
+        intent: "ai-implementation",
+        keywords: ["ai", "artificial", "future", "innovation", "emerging", "generative", "future-ready", "readiness", "literacy"],
+        answer: `Caitlin's AI implementation experience goes beyond presenting tools. She has helped shape district-level AI readiness work, including implementation planning, stakeholder feedback, educator training, AI literacy pathways, and ethical-use conversations for both adults and students.<br><br>Her work includes leading AI-focused professional learning for principals, teacher leaders, campus teams, and classroom educators; piloting AI literacy lessons with students; designing practical AI use cases for feedback, differentiation, accessibility, planning, and leadership workflows; and creating custom GPTs, prompts, MagicSchool tools, and Claude artifacts to solve real instructional and operational problems.<br><br>Her AI lens is practical: AI should reduce friction, expand access, support better teaching and leadership, and help schools prepare students for the world they are actually entering.`
+      },
+      {
+        intent: "professional-learning",
+        keywords: ["professional learning", "pd", "professional development", "training", "facilitation", "adult", "workshop", "learning experience"],
+        answer: `Caitlin is effective at professional learning because she designs for real educators, not imaginary perfect conditions. Her sessions are clear, practical, engaging, and built around what participants need to do differently after they leave the room.<br><br>She has designed and facilitated onboarding, leadership development, webinars, asynchronous learning, job-embedded coaching, AI training, digital learning workshops, campus PD series, districtwide learning events, and national conference sessions. She has supported everyone from new teachers to assistant principals, campus leaders, district leaders, and cabinet-level audiences.<br><br>Her strength is making complex work feel doable. She creates structure, examples, tools, and follow-up systems so learning does not end when the session closes.`
+      },
+      {
+        intent: "magicschool",
+        keywords: ["magicschool", "magic school", "edtech", "customer", "product training", "enablement"],
+        answer: `Caitlin works as a Professional Learning Facilitator with MagicSchool AI, delivering customized virtual and in-person AI professional development for K-12 educators and leaders across the U.S. She partners with Account Executives, Customer Success Managers, and school leaders to align sessions to local goals, implementation milestones, and educator readiness.<br><br>Her MagicSchool-related strengths include classroom-ready demos, custom tool ideas, implementation support, partner feedback loops, and the ability to make AI feel useful instead of intimidating. This experience makes her especially credible for edtech training, customer education, implementation, enablement, and professional learning roles.`
+      },
+      {
+        intent: "change-leadership",
+        keywords: ["change", "leadership", "manage", "strategy", "systems", "scale", "adoption"],
+        answer: `Caitlin leads change by creating clarity first. She listens to stakeholders, identifies friction points, builds usable frameworks, communicates the why, and designs support that meets people where they are. Her experience includes large-scale technology adoption, AI implementation, leadership development systems, onboarding programs, and cross-functional planning with HR, technology, curriculum, campus leaders, and executive teams.<br><br>She is not just a big-idea person. She is a systems builder who can turn the idea into calendars, resources, sessions, communications, feedback loops, and next steps.`
+      },
+      {
+        intent: "curriculum-design",
+        keywords: ["curriculum", "instructional design", "designer", "learning design", "content", "instruction"],
+        answer: `Yes. Caitlin is a strong fit for curriculum design, instructional design, and learning experience roles, especially when the work involves educator support, AI integration, leadership learning, digital tools, or future-ready instruction. She has designed professional learning content, onboarding systems, AI literacy lessons, LMS-based courses, facilitator resources, coaching tools, and classroom-ready training materials.<br><br>Her background as an ELA teacher, assistant principal, digital learning specialist, professional learning coordinator, and MagicSchool facilitator gives her a full-stack view of learning design: classroom reality, instructional quality, adult learning, implementation, and system alignment.`
+      },
+      {
+        intent: "cross-functional-leadership",
+        keywords: ["cross-functional", "stakeholder", "project management", "operations", "collaboration", "strategic objectives", "team leadership", "resource allocation", "continuous improvement"],
+        answer: `Yes. Caitlin is especially well aligned for cross-functional leadership roles that require coordination, communication, implementation planning, stakeholder alignment, and systems thinking. Throughout her career, she has regularly worked across departments including curriculum, technology, HR, campus leadership, communications, and executive teams to move initiatives from vision into execution.<br><br>Her experience includes coordinating district leadership academies, managing large-scale professional learning systems, supporting AI implementation initiatives, facilitating onboarding programs, organizing districtwide events, and building operational structures that help projects stay aligned and moving forward.<br><br>One of Caitlin's strongest differentiators is her ability to bring clarity to complex workstreams while maintaining strong relationships across teams. She combines strategic thinking with practical execution, which makes her particularly effective in fast-moving environments where collaboration, adaptability, and communication are essential.`
+      },
+      {
+        intent: "student-experiences",
+        keywords: ["experiential", "student experiences", "project-based", "pbl", "student programs", "21st century skills", "creativity", "critical thinking", "communication", "community events", "student engagement"],
+        answer: `Yes. Caitlin is a strong fit for experiential learning and student experience roles because her work consistently blends innovation, engagement, communication, and real-world learning design. Across classroom, campus, district, and AI leadership roles, she has designed learning experiences that move beyond compliance and focus on creativity, collaboration, problem solving, communication, and authentic student engagement.<br><br>She brings experience building programs, organizing learning events, developing instructional systems, coordinating large initiatives, supporting implementation logistics, and designing practical learning experiences for both students and adults. Her digital learning and AI background also aligns well with future-ready competencies such as creativity, communication, digital literacy, innovation, and emerging technology integration.<br><br>In addition, Caitlin has extensive experience creating workflows, managing moving parts across teams, organizing stakeholder communication, and supporting high-visibility district initiatives. That combination of systems thinking plus student-centered innovation makes her especially effective for experiential and future-focused learning roles.`
+      },
+      {
+        intent: "communications-strategy",
+        keywords: ["communications", "stakeholder engagement", "strategic communications", "media", "messaging", "social media", "executive communication", "community", "marketing"],
+        answer: `Caitlin's communication strengths go far beyond presentations. Throughout her career, she has regularly served as a connector between district departments, campus leaders, educators, executive leadership, and external partners. She has created district newsletters, executive presentations, conference materials, onboarding communications, implementation messaging, facilitator resources, AI guidance documents, and stakeholder-facing learning content.<br><br>Her communication style is clear, strategic, audience-aware, and highly practical. She is especially skilled at translating complex initiatives into messaging that feels understandable and actionable for real people. Her experience organizing large-scale professional learning, district initiatives, conferences, leadership programs, and AI implementation efforts also required extensive coordination, stakeholder alignment, and cross-functional communication.<br><br>This combination of strategic communication, operational coordination, and relationship-building makes her a strong fit for communications strategy, stakeholder engagement, and cross-functional project leadership roles.`
+      },
+      {
+        intent: "leadership-development",
+        keywords: ["leadership academies", "assistant principal", "principal", "emerging leaders", "cohort", "people development", "evaluation"],
+        answer: `Caitlin has direct experience designing and managing leadership development systems. In district professional learning roles, she supported assistant principal development, first-year AP cohorts, teacher leadership academies, new teacher mentor programs, leadership retreats, and monthly leadership gatherings. In Houston ISD, her recent work has focused on leadership academies, cohort operations, stakeholder coordination, communications, participant support, and program refinement.<br><br>That experience makes her a strong match for people development, leadership pipeline, academic leadership, professional learning operations, and principal-preparation adjacent roles.`
+      },
+      {
+        intent: "equity-access",
+        keywords: ["equity", "access", "special education", "english learners", "underserved", "accessibility", "inclusive"],
+        answer: `Caitlin often frames innovation as an equity issue. Her AI and digital learning work emphasizes access, ethical use, accessibility, multilingual learners, special education, and support for educators serving students with diverse needs. She has written and presented about AI's potential to expand access to personalized support when implemented responsibly.<br><br>Her lens is practical: tools should help real students and teachers, especially those who have historically had the least access to customized support.`
+      },
+      {
+        intent: "working-style",
+        keywords: ["what people say", "reviews", "testimonials", "working with", "presentation style", "facilitator", "speaker", "supporting change", "practical ai"],
+        answer: `Across conference feedback, leadership comments, peer recommendations, and participant reviews, several themes consistently appear about Caitlin's work:<br><br><ul><li><strong>She makes complex ideas practical.</strong> Many educators specifically mention leaving sessions with immediately usable strategies, tools, and implementation ideas.</li><li><strong>She energizes people instead of overwhelming them.</strong> Reviews often describe her sessions as engaging, encouraging, and motivating, especially around AI and innovation topics that can otherwise feel intimidating.</li><li><strong>She combines vision with support.</strong> Colleagues repeatedly highlight her ability to push thinking forward while remaining collaborative, thoughtful, and deeply invested in helping others grow.</li><li><strong>She communicates clearly across roles.</strong> Feedback ranges from classroom teachers to district leaders and consistently praises her ability to connect with diverse audiences.</li><li><strong>She builds trust through practicality and follow-through.</strong> Many comments reference her responsiveness, organization, preparation, and ability to turn ideas into actionable systems and resources.</li></ul>Several leaders specifically described her as someone who inspires professional growth, helps teams rethink what is possible, and makes innovation feel achievable.`
+      },
+      {
+        intent: "thought-leadership",
+        keywords: ["speaker", "conference", "present", "book", "articles", "thought leadership", "linkedin", "author"],
+        answer: `Caitlin is an active thought leader in AI, education, professional learning, and future-ready schools. She is the author of <em>AMPLIFIED Education: Creating Future-Ready Schools in the Age of AI</em>, has published numerous LinkedIn articles, curates AI-focused professional content, and has presented at major education conferences and events including ISTE, TCEA, Region 4 DLC, TxDLA, and Google for Education-related spaces.<br><br>Her thought leadership is strongest when she connects big future-facing ideas to practical next steps educators and leaders can use now.`
+      },
+      {
+        intent: "career-overview",
+        keywords: ["resume", "summary", "overview", "background", "experience", "career"],
+        answer: `Caitlin's career spans classroom teaching, instructional technology, campus administration, district professional learning, leadership development, AI implementation, and national edtech facilitation. She started as an ELA teacher and technology liaison, became a Digital Learning Specialist, served as an Assistant Principal, led district professional learning systems, returned to digital learning and AI implementation work, and now also facilitates professional learning nationally through MagicSchool AI.<br><br>The through-line is clear: she helps people learn, adopt new practices, and move through change with more confidence and clarity.`
+      }
+    ];
+
+    const fallbackAnswer = `I may not have a perfect canned answer for that yet, but here is the most relevant overview: Caitlin is strongest in roles that combine <strong>professional learning, AI strategy, instructional design, leadership development, edtech implementation, and systems-level change</strong>. She brings classroom credibility, campus leadership experience, district-level program design, national facilitation, and public thought leadership through her book, articles, and conference work.<br><br>Good follow-up questions include: “How does Caitlin lead AI implementation?”, “What makes her a strong professional learning leader?”, “Is she a fit for curriculum design?”, or “How would she support our team?”`;
+
+    const starterMessage = `Hi, I’m Caitlin’s interactive career profile. Ask me about her AI work, professional learning experience, leadership development background, MagicSchool facilitation, curriculum design fit, or what makes her different from a traditional resume candidate.`;
+
+    const messages = document.getElementById('messages');
+    const form = document.getElementById('askForm');
+    const input = document.getElementById('question');
+    const chips = document.querySelectorAll('.chip');
+    const analyzeBtn = document.getElementById('analyzeRoleBtn');
+    const jobDescriptionInput = document.getElementById('jobDescriptionInput');
+    const analysisResult = document.getElementById('analysisResult');
+
+    function addMessage(role, html) {
+      const wrapper = document.createElement('div');
+      wrapper.className = `message ${role}`;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = html;
+      wrapper.appendChild(bubble);
+      messages.appendChild(wrapper);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function answerQuestion(question) {
+      const q = question.toLowerCase();
+
+      // 1. Prioritize exact topic intent before general keyword scoring.
+      // This prevents broad words like "why," "fit," or "implementation" from overpowering the actual question topic.
+      const topicRules = [
+        {
+          intent: "why-hire",
+          phrases: ["why should we hire", "why hire", "why should i hire", "why would we hire", "why caitlin", "what makes caitlin different", "strong candidate", "best candidate", "choose caitlin"],
+          answer: responseBank.find(item => item.intent === "why-hire")?.answer
+        },
+        {
+          intent: "ai-implementation",
+          phrases: ["ai implementation", "artificial intelligence", "generative ai", "ai strategy", "ai readiness", "ai literacy", "future-ready", "future ready", "emerging technology"],
+          answer: responseBank.find(item => item.intent === "ai-implementation")?.answer
+        },
+        {
+          intent: "professional-learning",
+          phrases: ["professional learning", "pd", "professional development", "adult learning", "facilitation", "training", "workshop", "learning experience"],
+          answer: responseBank.find(item => item.intent === "professional-learning")?.answer
+        },
+        {
+          intent: "magicschool",
+          phrases: ["magicschool", "magic school"],
+          answer: responseBank.find(item => item.intent === "magicschool")?.answer
+        },
+        {
+          intent: "change-leadership",
+          phrases: ["lead change", "change leadership", "change management", "adoption", "scale", "systems change"],
+          answer: responseBank.find(item => item.intent === "change-leadership")?.answer
+        },
+        {
+          intent: "curriculum-design",
+          phrases: ["curriculum", "instructional design", "learning design", "designer", "content design"],
+          answer: responseBank.find(item => item.intent === "curriculum-design")?.answer
+        },
+        {
+          intent: "leadership-development",
+          phrases: ["leadership academies", "assistant principal", "principal", "emerging leaders", "people development", "cohort", "evaluation"],
+          answer: responseBank.find(item => item.intent === "leadership-development")?.answer
+        }
+      ];
+
+      for (const rule of topicRules) {
+        if (rule.answer && rule.phrases.some(phrase => q.includes(phrase))) {
+          return rule.answer;
+        }
+      }
+
+      // 2. Fall back to weighted scoring for more open-ended questions.
+      let bestMatch = null;
+      let bestScore = 0;
+
+      responseBank.forEach(item => {
+        const score = item.keywords.reduce((total, keyword) => {
+          if (q.includes(keyword)) return total + (keyword.length > 8 ? 3 : 1);
+          return total;
+        }, 0);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMatch = item;
+        }
+      });
+
+      if (bestMatch && bestScore > 0) return bestMatch.answer;
+      return fallbackAnswer;
+    }
+
+    function submitQuestion(question) {
+      const clean = question.trim();
+      if (!clean) return;
+      addMessage('user', clean.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+      input.value = '';
+      window.setTimeout(() => addMessage('assistant', answerQuestion(clean)), 280);
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      submitQuestion(input.value);
+    });
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => submitQuestion(chip.dataset.q));
+    });
+
+    function analyzeRoleFit(text) {
+      const input = text.toLowerCase();
+
+      const alignmentAreas = [];
+
+      if (input.includes('professional learning') || input.includes('training') || input.includes('facilitation')) {
+        alignmentAreas.push('Strong background designing and facilitating professional learning systems for teachers, leaders, and district teams.');
+      }
+
+      if (input.includes('ai') || input.includes('innovation') || input.includes('future')) {
+        alignmentAreas.push('Direct experience leading AI implementation planning, educator readiness, ethical integration, and future-ready learning initiatives.');
+      }
+
+      if (input.includes('leadership') || input.includes('coaching') || input.includes('development')) {
+        alignmentAreas.push('Experience building leadership academies, mentoring systems, onboarding structures, and leadership development cohorts.');
+      }
+
+      if (input.includes('cross-functional') || input.includes('stakeholder') || input.includes('collaboration')) {
+        alignmentAreas.push('Skilled in cross-functional coordination between curriculum, technology, HR, operations, communications, and executive leadership teams.');
+      }
+
+      if (input.includes('project') || input.includes('timeline') || input.includes('resource') || input.includes('deliverable') || input.includes('milestone')) {
+        alignmentAreas.push('Experience managing complex initiatives involving timelines, stakeholder communication, deliverables, logistics, implementation support, and operational coordination.');
+      }
+
+      if (input.includes('continuous improvement') || input.includes('streamline') || input.includes('process')) {
+        alignmentAreas.push('Strong systems-thinking mindset focused on improving processes, reducing friction, and building scalable support structures.');
+      }
+
+      if (input.includes('fast-paced') || input.includes('adaptability') || input.includes('multiple priorities')) {
+        alignmentAreas.push('Comfortable operating in fast-moving environments with shifting priorities, multiple stakeholders, and evolving organizational needs.');
+      }
+
+      if (input.includes('experiential') || input.includes('project-based') || input.includes('student experiences') || input.includes('21st century')) {
+        alignmentAreas.push('Strong alignment with experiential and future-ready learning through AI literacy work, innovative learning design, student engagement initiatives, and real-world instructional strategy.');
+      }
+
+      if (input.includes('canva') || input.includes('design') || input.includes('graphic') || input.includes('visual')) {
+        alignmentAreas.push('Advanced Canva and visual communication skills used for executive presentations, conference materials, PD resources, social content, branding, and learning design.');
+      }
+
+      if (input.includes('google workspace') || input.includes('google') || input.includes('lms') || input.includes('schoology')) {
+        alignmentAreas.push('Strong technical fluency with Google Workspace, LMS implementation, digital systems, collaborative workflows, onboarding resources, and educator technology adoption.');
+      }
+
+      if (input.includes('project management') || input.includes('trello') || input.includes('workflow') || input.includes('operations')) {
+        alignmentAreas.push('Experienced using project management and workflow systems to organize initiatives, streamline communication, coordinate teams, and improve operational clarity.');
+      }
+
+      if (input.includes('chatgpt') || input.includes('gemini') || input.includes('claude') || input.includes('ai tools')) {
+        alignmentAreas.push('Highly skilled with generative AI ecosystems including ChatGPT, Gemini, Claude, MagicSchool AI, and custom AI workflows for productivity, communication, learning design, and strategic support.');
+      }
+
+      if (input.includes('communication') || input.includes('stakeholder') || input.includes('media') || input.includes('community')) {
+        alignmentAreas.push('Experienced in executive communication, stakeholder messaging, presentation design, facilitator resources, newsletters, implementation communication, and cross-functional coordination.');
+      }
+
+      if (input.includes('curriculum') || input.includes('instructional design') || input.includes('learning design')) {
+        alignmentAreas.push('Strong fit for instructional design and curriculum-related work through experience creating PD systems, learning resources, AI literacy lessons, and facilitator content.');
+      }
+
+      if (input.includes('customer') || input.includes('implementation') || input.includes('enablement')) {
+        alignmentAreas.push('National edtech facilitation experience through MagicSchool AI supporting implementation, adoption, customer learning, and stakeholder success.');
+      }
+
+      const html = `
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0; color: var(--navy); font-size:22px; letter-spacing:-0.03em;">Strategic Role Alignment</h3>
+            <p style="margin:6px 0 0; color: var(--muted); font-size:13px;">Generated from the submitted role description.</p>
+          </div>
+          <div style="padding:8px 12px; border-radius:999px; background:rgba(23,183,177,0.12); color: var(--teal); font-size:12px; font-weight:800;">
+            High Potential Fit
+          </div>
+        </div>
+
+        <div style="display:grid; gap:14px;">
+          <div style="background:#F7FAFD; border-radius:16px; padding:16px;">
+            <strong style="display:block; margin-bottom:8px; color: var(--navy);">Top Alignment Areas</strong>
+            <ul style="margin:0; padding-left:20px; line-height:1.7; color: var(--navy);">
+              ${(alignmentAreas.length ? alignmentAreas : ['Strong overlap with leadership, learning, innovation, systems implementation, and stakeholder communication responsibilities.']).map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div style="background:#F7FAFD; border-radius:16px; padding:16px;">
+            <strong style="display:block; margin-bottom:8px; color: var(--navy);">Tailored Executive Summary</strong>
+            <p style="margin:0; color: var(--navy); line-height:1.7;">Caitlin brings a combination of strategic thinking, implementation planning, executive communication, and people-centered leadership. Her background spans classroom instruction, campus administration, districtwide leadership development, AI implementation, instructional innovation, and national professional learning facilitation. She is especially effective in roles requiring cross-functional collaboration, scalable learning systems, innovation adoption, and translating complex initiatives into practical execution.</p>
+          </div>
+
+          <div style="background:#F7FAFD; border-radius:16px; padding:16px;">
+            <strong style="display:block; margin-bottom:8px; color: var(--navy);">Most Relevant Accomplishments</strong>
+            <ul style="margin:0 0 16px; padding-left:20px; line-height:1.7; color: var(--navy);">
+              <li>Designed and managed districtwide professional learning systems serving 7,000+ employees</li>
+              <li>Co-led AI readiness and implementation planning initiatives for educators and leaders</li>
+              <li>Delivered national professional learning through MagicSchool AI and major conferences</li>
+              <li>Built onboarding systems, leadership academies, mentoring structures, and scalable implementation supports</li>
+              <li>Advanced user and trainer of Google Workspace, LMS platforms, Canva, AI ecosystems, and collaborative project management tools</li>
+              <li>Supported leadership development initiatives impacting over 100 schools in Houston ISD</li>
+            </ul>
+
+            <strong style="display:block; margin-bottom:8px; color: var(--navy);">Suggested Interview Topics</strong>
+            <ul style="margin:0; padding-left:20px; line-height:1.7; color: var(--navy);">
+              <li>AI implementation and educator adoption strategies</li>
+              <li>Leadership development and cohort-based learning systems</li>
+              <li>Cross-functional project coordination</li>
+              <li>Designing professional learning that drives implementation</li>
+              <li>Balancing innovation with practical execution</li>
+            </ul>
+          </div>
+        </div>
+      `;
+
+      analysisResult.innerHTML = html;
+      analysisResult.style.display = 'block';
+    }
+
+    analyzeBtn.addEventListener('click', () => {
+      const text = jobDescriptionInput.value.trim();
+      if (!text) return;
+      analyzeRoleFit(text);
+    });
+
+    addMessage('assistant', starterMessage);
+  </script>
+</body>
+</html>
